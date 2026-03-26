@@ -1,868 +1,560 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offer Builder - Create Your Measurable Offer</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #f0f7ff 0%, #f5f0ff 100%);
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            margin-bottom: 30px;
-        }
-
-        .header-content {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .header-title {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .icon-box {
-            width: 50px;
-            height: 50px;
-            background: #dbeafe;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-
-        .title-text h1 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1f2937;
-        }
-
-        .title-text p {
-            font-size: 13px;
-            color: #6b7280;
-            margin-top: 4px;
-        }
-
-        .step-counter {
-            font-size: 32px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #2563eb, #7c3aed);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .progress-bar {
-            display: flex;
-            gap: 8px;
-            height: 4px;
-        }
-
-        .progress-segment {
-            flex: 1;
-            background: #e5e7eb;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-segment.active {
-            background: linear-gradient(135deg, #2563eb, #7c3aed);
-            animation: fill 0.5s ease-in-out;
-        }
-
-        @keyframes fill {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #f3f4f6;
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .card h2 {
-            font-size: 28px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 8px;
-        }
-
-        .card .subtitle {
-            color: #6b7280;
-            margin-bottom: 24px;
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 8px;
-        }
-
-        textarea, input[type="text"], input[type="email"], input[type="number"] {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: all 0.3s ease;
-        }
-
-        textarea:focus, input:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .button {
-            width: 100%;
-            padding: 14px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .button-primary {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: white;
-        }
-
-        .button-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
-        }
-
-        .button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .suggestion-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .suggestion-item {
-            padding: 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .suggestion-item:hover {
-            border-color: #93c5fd;
-            background: #f0f9ff;
-        }
-
-        .suggestion-item.selected {
-            border-color: #2563eb;
-            background: #eff6ff;
-        }
-
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .pricing-card {
-            padding: 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .pricing-card:hover {
-            border-color: #93c5fd;
-            background: #f0f9ff;
-        }
-
-        .pricing-card.selected {
-            border-color: #2563eb;
-            background: #eff6ff;
-        }
-
-        .pricing-card .tier {
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 8px;
-        }
-
-        .pricing-card .price {
-            font-size: 20px;
-            font-weight: 700;
-            color: #2563eb;
-            margin: 8px 0;
-        }
-
-        .pricing-card .rationale {
-            font-size: 12px;
-            color: #6b7280;
-        }
-
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            padding: 40px 20px;
-            color: #6b7280;
-        }
-
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid #e5e7eb;
-            border-top-color: #2563eb;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .success-container {
-            text-align: center;
-        }
-
-        .success-icon {
-            width: 60px;
-            height: 60px;
-            background: #dcfce7;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 32px;
-        }
-
-        .success-container h2 {
-            color: #16a34a;
-            margin-bottom: 8px;
-        }
-
-        .info-box {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-radius: 8px;
-            padding: 16px;
-            margin: 20px 0;
-            color: #1e40af;
-            font-size: 14px;
-        }
-
-        .plan-section {
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-
-        .plan-section h3 {
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 12px;
-        }
-
-        .plan-section ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .plan-section li {
-            padding: 6px 0;
-            color: #4b5563;
-            display: flex;
-            gap: 8px;
-        }
-
-        .plan-section li:before {
-            content: "•";
-            color: #2563eb;
-            font-weight: bold;
-            flex-shrink: 0;
-        }
-
-        .summary-box {
-            background: #f9fafb;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .summary-box p {
-            margin-bottom: 8px;
-            color: #374151;
-        }
-
-        .summary-box strong {
-            color: #1f2937;
-        }
-
-        @media (max-width: 768px) {
-            .card {
-                padding: 20px;
-            }
-
-            .card h2 {
-                font-size: 20px;
-            }
-
-            .pricing-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { useState } = React;
-
-        function OfferBuilder() {
-            const [step, setStep] = useState(0);
-            const [loading, setLoading] = useState(false);
-            const [suggestions, setSuggestions] = useState({});
-            const [formData, setFormData] = useState({
-                problem: '',
-                solution: '',
-                metric: '',
-                target: '',
-                audience: '',
-                currentStatus: '',
-                email: '',
-                name: '',
-                pricing: '',
-                monthlyTarget: '',
-                monthlyConversions: '',
-            });
-            const [summary, setSummary] = useState(null);
-
-            const updateFormData = (field, value) => {
-                setFormData(prev => ({ ...prev, [field]: value }));
-            };
-
-            const generateSuggestions = async () => {
-                setLoading(true);
-                try {
-                    const response = await fetch('https://api.anthropic.com/v1/messages', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            model: 'claude-sonnet-4-20250514',
-                            max_tokens: 1000,
-                            messages: [{
-                                role: 'user',
-                                content: `Generate 5 compelling offer names for: "${formData.solution}" that solves "${formData.problem}" and promises "${formData.metric}". Return ONLY a JSON object with this structure: {"names": ["name1", "name2", "name3", "name4", "name5"]}. No other text.`
-                            }]
-                        })
-                    });
-
-                    const data = await response.json();
-                    const textContent = data.content.find(c => c.type === 'text')?.text || '{}';
-                    const clean = textContent.replace(/```json|```/g, '').trim();
-                    const names = JSON.parse(clean).names || [];
-                    setSuggestions(prev => ({ ...prev, names }));
-                } catch (error) {
-                    console.error('Error generating names:', error);
-                }
-                setLoading(false);
-            };
-
-            const generatePricingStrategy = async () => {
-                setLoading(true);
-                try {
-                    const response = await fetch('https://api.anthropic.com/v1/messages', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            model: 'claude-sonnet-4-20250514',
-                            max_tokens: 800,
-                            messages: [{
-                                role: 'user',
-                                content: `For an offer called "${formData.name}" targeting "${formData.audience}", propose 3 pricing models. Return ONLY JSON: {"pricing": [{"tier": "name", "price": "$X", "rationale": "why"}]}. No other text.`
-                            }]
-                        })
-                    });
-
-                    const data = await response.json();
-                    const textContent = data.content.find(c => c.type === 'text')?.text || '{}';
-                    const clean = textContent.replace(/```json|```/g, '').trim();
-                    const pricing = JSON.parse(clean).pricing || [];
-                    setSuggestions(prev => ({ ...prev, pricing }));
-                } catch (error) {
-                    console.error('Error generating pricing:', error);
-                }
-                setLoading(false);
-            };
-
-            const generateSalesStrategy = async () => {
-                setLoading(true);
-                try {
-                    const response = await fetch('https://api.anthropic.com/v1/messages', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            model: 'claude-sonnet-4-20250514',
-                            max_tokens: 1200,
-                            messages: [{
-                                role: 'user',
-                                content: `Create a 30-day go-to-market plan for "${formData.name}" with ${formData.monthlyTarget} monthly views and ${formData.monthlyConversions} conversions. Return ONLY JSON: {"plan": [{"week": 1, "actions": ["action1", "action2", "action3"]}, ...]}. No other text.`
-                            }]
-                        })
-                    });
-
-                    const data = await response.json();
-                    const textContent = data.content.find(c => c.type === 'text')?.text || '{}';
-                    const clean = textContent.replace(/```json|```/g, '').trim();
-                    const plan = JSON.parse(clean).plan || [];
-                    setSuggestions(prev => ({ ...prev, plan }));
-                } catch (error) {
-                    console.error('Error generating plan:', error);
-                }
-                setLoading(false);
-            };
-
-            const handleNext = async () => {
-                if (step === 1) {
-                    await generateSuggestions();
-                } else if (step === 3) {
-                    await generatePricingStrategy();
-                } else if (step === 4) {
-                    await generateSalesStrategy();
-                }
-                setStep(step + 1);
-            };
-
-            const generateSummary = () => {
-                return {
-                    offerName: formData.name,
-                    problem: formData.problem,
-                    solution: formData.solution,
-                    metric: formData.metric,
-                    target: formData.target,
-                    audience: formData.audience,
-                    pricing: formData.pricing,
-                    monthlyTarget: formData.monthlyTarget,
-                    monthlyConversions: formData.monthlyConversions,
-                    pricingStrategy: suggestions.pricing,
-                    thirtyDayPlan: suggestions.plan,
-                    generatedAt: new Date().toLocaleString()
-                };
-            };
-
-            const handleSubmit = async () => {
-                const summaryData = generateSummary();
-                setSummary(summaryData);
-
-                // Send to your backend here (see installation guide)
-                try {
-                    // Example: sending to Mailchimp or Zapier
-                    console.log('Form submitted:', { email: formData.email, data: summaryData });
-                } catch (error) {
-                    console.error('Error submitting:', error);
-                }
-
-                setStep(6);
-            };
-
-            const downloadSummary = () => {
-                const content = JSON.stringify(summary, null, 2);
-                const blob = new Blob([content], { type: 'application/json' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${formData.name.replace(/\s+/g, '-')}-plan.json`;
-                a.click();
-                window.URL.revokeObjectURL(url);
-            };
-
-            const steps = [
-                { title: 'Define Your Offer', description: 'What problem does your offer solve?' },
-                { title: 'Name Your Offer', description: 'Get AI-powered name suggestions' },
-                { title: 'Know Your Audience', description: 'Who are you targeting?' },
-                { title: 'Pricing Strategy', description: 'Get pricing recommendations' },
-                { title: 'Goals & Targets', description: 'Set your monthly targets' },
-                { title: 'Review Plan', description: 'See your 30-day roadmap' }
-            ];
-
-            return (
-                <>
-                    <div className="header">
-                        <div className="header-content">
-                            <div className="header-top">
-                                <div className="header-title">
-                                    <div className="icon-box">✨</div>
-                                    <div className="title-text">
-                                        <h1>Offer Builder</h1>
-                                        <p>Create a measurable, desirable offer in 30 days</p>
-                                    </div>
-                                </div>
-                                <div className="step-counter">{step + 1}/6</div>
-                            </div>
-                            <div className="progress-bar">
-                                {steps.map((_, i) => (
-                                    <div key={i} className={`progress-segment ${i <= step ? 'active' : ''}`} />
-                                ))}
-                            </div>
-                        </div>
+import React, { useState } from 'react';
+import { ChevronRight, Loader2, Check, Mail, Download, Copy } from 'lucide-react';
+
+export default function OfferBuilder() {
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [offerData, setOfferData] = useState({
+    targetAudience: '',
+    problemSolved: '',
+    solution: '',
+    outcome1: '',
+    outcome2: '',
+    outcome3: '',
+    desiredPrice: '',
+    competitorContext: '',
+    email: '',
+    fullName: '',
+  });
+
+  const [generatedContent, setGeneratedContent] = useState({
+    names: [],
+    salesPlan: '',
+    pricing: '',
+    targets: '',
+  });
+
+  const [showSummary, setShowSummary] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setOfferData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const callClaudeAPI = async (prompt) => {
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [
+            { role: 'user', content: prompt }
+          ],
+        }),
+      });
+
+      const data = await response.json();
+      return data.content[0].text;
+    } catch (error) {
+      console.error('API Error:', error);
+      return 'Unable to generate content. Please try again.';
+    }
+  };
+
+  const generateOfferNames = async () => {
+    setLoading(true);
+    const prompt = `Based on this offer:
+    - Target Audience: ${offerData.targetAudience}
+    - Problem Solved: ${offerData.problemSolved}
+    - Solution: ${offerData.solution}
+    - Key Outcomes: ${offerData.outcome1}, ${offerData.outcome2}, ${offerData.outcome3}
+
+    Generate exactly 5 compelling, memorable names for this offer that:
+    1. Clearly communicate the benefit
+    2. Are brandable and memorable
+    3. Stand out in a crowded market
+    4. Include a mix of benefit-driven, playful, and professional options
+
+    Format as a numbered list with a 1-2 sentence explanation for each name.`;
+
+    const names = await callClaudeAPI(prompt);
+    setGeneratedContent(prev => ({ ...prev, names: names }));
+    setLoading(false);
+    setStep(4);
+  };
+
+  const generateSalesPlan = async () => {
+    setLoading(true);
+    const prompt = `Based on this offer: "${offerData.targetAudience} gets ${offerData.solution} to solve ${offerData.problemSolved}. Measurable outcomes: ${offerData.outcome1}, ${offerData.outcome2}, ${offerData.outcome3}."
+
+    Create a concise sales plan that includes:
+
+    1. **Sales Channels** (top 3 channels ranked by ROI for this audience)
+    2. **Pricing Strategy** (recommended price point range with reasoning, payment options, value justification)
+    3. **Traffic & Conversion Targets** (monthly visitor goals, conversion rates, revenue targets)
+    4. **Key Messaging Angles** (3 ways to position this offer)
+
+    Keep it practical and actionable. Include specific numbers and percentages.`;
+
+    const plan = await callClaudeAPI(prompt);
+    setGeneratedContent(prev => ({ ...prev, salesPlan: plan }));
+    setLoading(false);
+    setStep(5);
+  };
+
+  const generate30DayPlan = async () => {
+    setLoading(true);
+    const prompt = `Create a detailed 30-day implementation plan for launching this offer:
+    - Offer: ${offerData.targetAudience} gets ${offerData.solution}
+    - Outcomes: ${offerData.outcome1}, ${offerData.outcome2}, ${offerData.outcome3}
+    - Price Point: $${offerData.desiredPrice}
+
+    Format as a week-by-week breakdown:
+
+    **Week 1: Foundation**
+    - Day 1-3: [specific tasks]
+    - Day 4-7: [specific tasks]
+
+    **Week 2: Development**
+    - Day 8-10: [specific tasks]
+    - Day 11-14: [specific tasks]
+
+    **Week 3: Marketing Setup**
+    - Day 15-17: [specific tasks]
+    - Day 18-21: [specific tasks]
+
+    **Week 4: Launch & Scale**
+    - Day 22-24: [specific tasks]
+    - Day 25-30: [specific tasks]
+
+    Include specific action items, tools to set up, content to create, and metrics to track.`;
+
+    const plan = await callClaudeAPI(prompt);
+    setGeneratedContent(prev => ({ ...prev, plan30Day: plan }));
+    setLoading(false);
+    setShowSummary(true);
+  };
+
+  const downloadPlan = () => {
+    const fullContent = `
+OFFER BUILDER - YOUR 30-DAY LAUNCH PLAN
+========================================
+
+OFFER DETAILS
+Target Audience: ${offerData.targetAudience}
+Problem Solved: ${offerData.problemSolved}
+Solution: ${offerData.solution}
+
+MEASURABLE OUTCOMES
+1. ${offerData.outcome1}
+2. ${offerData.outcome2}
+3. ${offerData.outcome3}
+
+SUGGESTED OFFER NAMES
+${generatedContent.names}
+
+SALES PLAN & STRATEGY
+${generatedContent.salesPlan}
+
+30-DAY IMPLEMENTATION PLAN
+${generatedContent.plan30Day}
+    `;
+
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(fullContent));
+    element.setAttribute('download', `offer-launch-plan-${Date.now()}.txt`);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
+  const copyToClipboard = () => {
+    const fullContent = `
+OFFER BUILDER - YOUR 30-DAY LAUNCH PLAN
+========================================
+
+OFFER DETAILS
+Target Audience: ${offerData.targetAudience}
+Problem Solved: ${offerData.problemSolved}
+Solution: ${offerData.solution}
+
+MEASURABLE OUTCOMES
+1. ${offerData.outcome1}
+2. ${offerData.outcome2}
+3. ${offerData.outcome3}
+
+SUGGESTED OFFER NAMES
+${generatedContent.names}
+
+SALES PLAN & STRATEGY
+${generatedContent.salesPlan}
+
+30-DAY IMPLEMENTATION PLAN
+${generatedContent.plan30Day}
+    `;
+    navigator.clipboard.writeText(fullContent);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)' }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital@0;1&family=DM+Sans:wght@400;500;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; }
+        
+        .fade-in { animation: fadeIn 0.6s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .slide-in { animation: slideIn 0.5s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        
+        .pulse-glow { animation: pulseGlow 2s infinite; }
+        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); } 50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); } }
+      `}</style>
+
+      <div className="max-w-2xl mx-auto px-4 py-12">
+        {/* Header */}
+        <div className="text-center mb-12 fade-in">
+          <h1 className="text-5xl font-bold text-white mb-2" style={{ fontFamily: 'Crimson Text, serif', fontWeight: 700 }}>
+            Build Your Offer
+          </h1>
+          <p className="text-slate-300 text-lg">Get AI-powered guidance to create, name, and launch a high-converting offer in 30 days.</p>
+        </div>
+
+        {/* Progress Bar */}
+        {step < 6 && (
+          <div className="mb-8">
+            <div className="flex justify-between mb-2">
+              {[1, 2, 3, 4, 5].map(s => (
+                <div key={s} className={`h-1 flex-1 mx-1 rounded-full transition-all ${s <= step ? 'bg-blue-500' : 'bg-slate-700'}`} />
+              ))}
+            </div>
+            <p className="text-sm text-slate-400 text-center">Step {step} of 5</p>
+          </div>
+        )}
+
+        {/* Content */}
+        <div className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-xl p-8 mb-6 fade-in">
+          
+          {/* STEP 1: Offer Basics */}
+          {step === 1 && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white">Define Your Core Offer</h2>
+              <p className="text-slate-300">Tell us about the offer you want to create.</p>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">Who is your target audience?</label>
+                  <input
+                    type="text"
+                    name="targetAudience"
+                    placeholder="e.g., SaaS founders struggling with sales"
+                    value={offerData.targetAudience}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">What specific problem do you solve?</label>
+                  <input
+                    type="text"
+                    name="problemSolved"
+                    placeholder="e.g., Can't consistently close deals above $5k"
+                    value={offerData.problemSolved}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">How do you solve it? (Your solution)</label>
+                  <input
+                    type="text"
+                    name="solution"
+                    placeholder="e.g., A 6-week intensive coaching program on high-ticket sales"
+                    value={offerData.solution}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={() => setStep(2)}
+                disabled={!offerData.targetAudience || !offerData.problemSolved || !offerData.solution}
+                className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
+              >
+                Continue <ChevronRight size={20} />
+              </button>
+            </div>
+          )}
+
+          {/* STEP 2: Measurable Outcomes */}
+          {step === 2 && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white">Measurable Outcomes</h2>
+              <p className="text-slate-300">What will your customers be able to measure/achieve?</p>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">Outcome #1</label>
+                  <input
+                    type="text"
+                    name="outcome1"
+                    placeholder="e.g., Close 3-5 deals per month at $10k+ average value"
+                    value={offerData.outcome1}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">Outcome #2</label>
+                  <input
+                    type="text"
+                    name="outcome2"
+                    placeholder="e.g., 60% close rate on qualified prospects"
+                    value={offerData.outcome2}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">Outcome #3</label>
+                  <input
+                    type="text"
+                    name="outcome3"
+                    placeholder="e.g., Reduce sales cycles from 90 to 30 days"
+                    value={offerData.outcome3}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">Your Desired Price Point</label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white">$</span>
+                    <input
+                      type="number"
+                      name="desiredPrice"
+                      placeholder="5000"
+                      value={offerData.desiredPrice}
+                      onChange={handleInputChange}
+                      className="flex-1 px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setStep(1)}
+                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-3 rounded-lg transition-colors"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={() => setStep(3)}
+                  disabled={!offerData.outcome1 || !offerData.outcome2 || !offerData.outcome3 || !offerData.desiredPrice}
+                  className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 text-white font-semibold py-3 rounded-lg transition-colors"
+                >
+                  Continue <ChevronRight size={20} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 3: Generate Names */}
+          {step === 3 && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white">Generate Offer Names</h2>
+              <p className="text-slate-300">Let AI suggest 5 compelling names for your offer based on your details.</p>
+              
+              <button
+                onClick={generateOfferNames}
+                disabled={loading}
+                className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
+              >
+                {loading ? <Loader2 size={20} className="animate-spin" /> : null}
+                {loading ? 'Generating Names...' : 'Generate 5 Offer Names'}
+              </button>
+
+              {generatedContent.names && (
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 mt-4">
+                  <h3 className="text-lg font-semibold text-white mb-4">Your Suggested Names:</h3>
+                  <div className="prose prose-invert max-w-none">
+                    <div className="text-slate-300 whitespace-pre-wrap text-sm leading-relaxed">
+                      {generatedContent.names}
                     </div>
+                  </div>
+                </div>
+              )}
 
-                    <div className="container">
-                        {/* Step 0: Define Offer */}
-                        {step === 0 && (
-                            <div className="card">
-                                <h2>{steps[0].title}</h2>
-                                <p className="subtitle">{steps[0].description}</p>
-                                <div className="form-group">
-                                    <label>What problem does your offer solve?</label>
-                                    <textarea
-                                        value={formData.problem}
-                                        onChange={(e) => updateFormData('problem', e.target.value)}
-                                        placeholder="e.g., Founders struggle to validate ideas before investing time and money"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>What's your solution?</label>
-                                    <textarea
-                                        value={formData.solution}
-                                        onChange={(e) => updateFormData('solution', e.target.value)}
-                                        placeholder="e.g., A step-by-step framework to test market demand in 7 days"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>What measurable outcome will they get?</label>
-                                    <input
-                                        type="text"
-                                        value={formData.metric}
-                                        onChange={(e) => updateFormData('metric', e.target.value)}
-                                        placeholder="e.g., A validated idea with 100 confirmed customers"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>What's their current status?</label>
-                                    <input
-                                        type="text"
-                                        value={formData.currentStatus}
-                                        onChange={(e) => updateFormData('currentStatus', e.target.value)}
-                                        placeholder="e.g., Have an idea but afraid to launch"
-                                    />
-                                </div>
-                                <button onClick={handleNext} className="button button-primary">
-                                    Continue →
-                                </button>
-                            </div>
-                        )}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setStep(2)}
+                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-3 rounded-lg transition-colors"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={generateSalesPlan}
+                  disabled={loading || !generatedContent.names}
+                  className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 text-white font-semibold py-3 rounded-lg transition-colors"
+                >
+                  Next: Sales Plan
+                </button>
+              </div>
+            </div>
+          )}
 
-                        {/* Step 1: Name Offer */}
-                        {step === 1 && (
-                            <div className="card">
-                                <h2>{steps[1].title}</h2>
-                                <p className="subtitle">{steps[1].description}</p>
-                                {loading ? (
-                                    <div className="loading">
-                                        <div className="spinner"></div>
-                                        <span>Generating 5 compelling names...</span>
-                                    </div>
-                                ) : suggestions.names && suggestions.names.length > 0 ? (
-                                    <div className="suggestion-grid">
-                                        {suggestions.names.map((name, i) => (
-                                            <div
-                                                key={i}
-                                                className={`suggestion-item ${formData.name === name ? 'selected' : ''}`}
-                                                onClick={() => updateFormData('name', name)}
-                                            >
-                                                {name}
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : null}
-                                <div className="form-group">
-                                    <label>Or enter your own name</label>
-                                    <input
-                                        type="text"
-                                        value={formData.name}
-                                        onChange={(e) => updateFormData('name', e.target.value)}
-                                        placeholder="Your offer name"
-                                    />
-                                </div>
-                                <button
-                                    onClick={handleNext}
-                                    disabled={!formData.name}
-                                    className="button button-primary"
-                                >
-                                    Continue →
-                                </button>
-                            </div>
-                        )}
+          {/* STEP 4: Generate Sales Plan */}
+          {step === 4 && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white">Your Sales Plan & Strategy</h2>
+              <p className="text-slate-300">Here's your pricing, channels, and conversion strategy.</p>
+              
+              <button
+                onClick={generateSalesPlan}
+                disabled={loading}
+                className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
+              >
+                {loading ? <Loader2 size={20} className="animate-spin" /> : null}
+                {loading ? 'Generating Plan...' : 'Generate Sales Plan & Targets'}
+              </button>
 
-                        {/* Step 2: Audience */}
-                        {step === 2 && (
-                            <div className="card">
-                                <h2>{steps[2].title}</h2>
-                                <p className="subtitle">{steps[2].description}</p>
-                                <div className="form-group">
-                                    <label>Who is your ideal customer?</label>
-                                    <textarea
-                                        value={formData.audience}
-                                        onChange={(e) => updateFormData('audience', e.target.value)}
-                                        placeholder="e.g., First-time founders aged 25-40 with a startup idea"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>What's your target reach?</label>
-                                    <input
-                                        type="text"
-                                        value={formData.target}
-                                        onChange={(e) => updateFormData('target', e.target.value)}
-                                        placeholder="e.g., 10,000 founders on Twitter and LinkedIn"
-                                    />
-                                </div>
-                                <button onClick={handleNext} className="button button-primary">
-                                    Continue →
-                                </button>
-                            </div>
-                        )}
+              {generatedContent.salesPlan && (
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 mt-4">
+                  <div className="text-slate-300 whitespace-pre-wrap text-sm leading-relaxed">
+                    {generatedContent.salesPlan}
+                  </div>
+                </div>
+              )}
 
-                        {/* Step 3: Pricing */}
-                        {step === 3 && (
-                            <div className="card">
-                                <h2>{steps[3].title}</h2>
-                                <p className="subtitle">{steps[3].description}</p>
-                                {loading ? (
-                                    <div className="loading">
-                                        <div className="spinner"></div>
-                                        <span>Generating pricing models...</span>
-                                    </div>
-                                ) : suggestions.pricing && suggestions.pricing.length > 0 ? (
-                                    <div className="pricing-grid">
-                                        {suggestions.pricing.map((tier, i) => (
-                                            <div
-                                                key={i}
-                                                className={`pricing-card ${formData.pricing.includes(tier.price) ? 'selected' : ''}`}
-                                                onClick={() => updateFormData('pricing', `${tier.tier} - ${tier.price}`)}
-                                            >
-                                                <div className="tier">{tier.tier}</div>
-                                                <div className="price">{tier.price}</div>
-                                                <div className="rationale">{tier.rationale}</div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : null}
-                                <div className="form-group">
-                                    <label>Your chosen pricing</label>
-                                    <input
-                                        type="text"
-                                        value={formData.pricing}
-                                        onChange={(e) => updateFormData('pricing', e.target.value)}
-                                        placeholder="e.g., $97 one-time or $29/month"
-                                    />
-                                </div>
-                                <button onClick={handleNext} className="button button-primary">
-                                    Continue →
-                                </button>
-                            </div>
-                        )}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setStep(3)}
+                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-3 rounded-lg transition-colors"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={generateSalesPlan}
+                  disabled={loading || !generatedContent.salesPlan}
+                  className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 text-white font-semibold py-3 rounded-lg transition-colors"
+                >
+                  Generate 30-Day Plan
+                </button>
+              </div>
+            </div>
+          )}
 
-                        {/* Step 4: Targets */}
-                        {step === 4 && (
-                            <div className="card">
-                                <h2>{steps[4].title}</h2>
-                                <p className="subtitle">{steps[4].description}</p>
-                                <div className="form-group">
-                                    <label>Monthly page views target</label>
-                                    <input
-                                        type="number"
-                                        value={formData.monthlyTarget}
-                                        onChange={(e) => updateFormData('monthlyTarget', e.target.value)}
-                                        placeholder="e.g., 5000"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Monthly conversions target</label>
-                                    <input
-                                        type="number"
-                                        value={formData.monthlyConversions}
-                                        onChange={(e) => updateFormData('monthlyConversions', e.target.value)}
-                                        placeholder="e.g., 50"
-                                    />
-                                </div>
-                                {formData.monthlyTarget && formData.monthlyConversions && (
-                                    <div className="info-box">
-                                        Conversion Rate Target: {((formData.monthlyConversions / formData.monthlyTarget) * 100).toFixed(1)}%
-                                    </div>
-                                )}
-                                <button onClick={handleNext} className="button button-primary">
-                                    Generate Your Plan →
-                                </button>
-                            </div>
-                        )}
+          {/* STEP 5: Email Collection */}
+          {step === 5 && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white">Get Your Complete Plan</h2>
+              <p className="text-slate-300">Enter your details to download your personalized 30-day launch plan.</p>
+              
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mb-4">
+                <p className="text-sm text-blue-200">✓ Offer names generated<br/>✓ Sales strategy created<br/>✓ 30-day plan ready</p>
+              </div>
 
-                        {/* Step 5: Review Plan */}
-                        {step === 5 && (
-                            <div className="card">
-                                <h2>{steps[5].title}</h2>
-                                <p className="subtitle">Here's your personalized 30-day roadmap</p>
-                                {loading ? (
-                                    <div className="loading">
-                                        <div className="spinner"></div>
-                                        <span>Generating your 30-day plan...</span>
-                                    </div>
-                                ) : suggestions.plan ? (
-                                    <div>
-                                        {suggestions.plan.map((week, i) => (
-                                            <div key={i} className="plan-section">
-                                                <h3>Week {week.week}</h3>
-                                                <ul>
-                                                    {week.actions && week.actions.map((action, j) => (
-                                                        <li key={j}>{action}</li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : null}
-                                <div className="summary-box">
-                                    <p><strong>Offer:</strong> {formData.name}</p>
-                                    <p><strong>Problem:</strong> {formData.problem}</p>
-                                    <p><strong>Audience:</strong> {formData.audience}</p>
-                                    <p><strong>Pricing:</strong> {formData.pricing}</p>
-                                    <p><strong>Target:</strong> {formData.monthlyTarget} views, {formData.monthlyConversions} conversions</p>
-                                </div>
-                                <div className="form-group">
-                                    <label>Enter your email to get your plan</label>
-                                    <input
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={(e) => updateFormData('email', e.target.value)}
-                                        placeholder="you@example.com"
-                                    />
-                                </div>
-                                <button
-                                    onClick={handleSubmit}
-                                    disabled={!formData.email}
-                                    className="button button-primary"
-                                >
-                                    Get My Plan 📥
-                                </button>
-                            </div>
-                        )}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">Full Name</label>
+                  <input
+                    type="text"
+                    name="fullName"
+                    placeholder="Your name"
+                    value={offerData.fullName}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
 
-                        {/* Step 6: Success */}
-                        {step === 6 && summary && (
-                            <div className="card success-container">
-                                <div className="success-icon">✅</div>
-                                <h2>You're all set!</h2>
-                                <p className="subtitle">Your 30-day offer plan has been created</p>
-                                <div className="info-box">
-                                    <p>We've sent your complete plan to <strong>{formData.email}</strong></p>
-                                    <p style={{marginTop: '8px', fontSize: '12px'}}>Check your inbox for the full roadmap and all 4 weeks of action items.</p>
-                                </div>
-                                <button onClick={downloadSummary} className="button button-primary">
-                                    Download as JSON 📥
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        setStep(0);
-                                        setFormData({
-                                            problem: '', solution: '', metric: '', target: '', audience: '',
-                                            currentStatus: '', email: '', name: '', pricing: '',
-                                            monthlyTarget: '', monthlyConversions: '',
-                                        });
-                                        setSuggestions({});
-                                        setSummary(null);
-                                    }}
-                                    style={{marginTop: '12px', background: 'white', color: '#1f2937', border: '2px solid #d1d5db'}}
-                                    className="button"
-                                >
-                                    Create Another Offer
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </>
-            );
-        }
+                <div>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">Email Address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    value={offerData.email}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
 
-        ReactDOM.render(<OfferBuilder />, document.getElementById('root'));
-    </script>
-</body>
-</html>
+              <button
+                onClick={generate30DayPlan}
+                disabled={loading || !offerData.email || !offerData.fullName}
+                className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
+              >
+                {loading ? <Loader2 size={20} className="animate-spin" /> : <Download size={20} />}
+                {loading ? 'Creating Your Plan...' : 'Generate & Download Full Plan'}
+              </button>
+
+              <button
+                onClick={() => setStep(4)}
+                className="w-full bg-slate-700 hover:bg-slate-600 text-white font-semibold py-3 rounded-lg transition-colors"
+              >
+                Back
+              </button>
+            </div>
+          )}
+
+          {/* SUMMARY View */}
+          {showSummary && (
+            <div className="space-y-6 fade-in">
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500/20 border border-green-500/30 rounded-full mb-4">
+                  <Check size={32} className="text-green-400" />
+                </div>
+                <h2 className="text-2xl font-bold text-white">Your Plan Is Ready!</h2>
+                <p className="text-slate-300 mt-2">Download your complete 30-day offer launch strategy.</p>
+              </div>
+
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 max-h-96 overflow-y-auto">
+                <h3 className="text-lg font-semibold text-white mb-4">Your 30-Day Implementation Plan:</h3>
+                <div className="text-slate-300 whitespace-pre-wrap text-sm leading-relaxed">
+                  {generatedContent.plan30Day}
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={copyToClipboard}
+                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                >
+                  {copied ? <Check size={20} /> : <Copy size={20} />}
+                  {copied ? 'Copied!' : 'Copy to Clipboard'}
+                </button>
+                <button
+                  onClick={downloadPlan}
+                  className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                >
+                  <Download size={20} />
+                  Download Plan
+                </button>
+              </div>
+
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-center">
+                <p className="text-sm text-slate-300">
+                  💌 We've sent your complete plan to <span className="font-semibold text-white">{offerData.email}</span>
+                </p>
+                <p className="text-xs text-slate-400 mt-2">Plus: Exclusive tips on scaling your offer in the next 30 days</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="text-center text-slate-400 text-sm">
+          <p>Built to help you launch offers that convert. No fluff, just results.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
